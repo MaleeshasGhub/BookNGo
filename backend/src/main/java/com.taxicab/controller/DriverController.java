@@ -1,5 +1,92 @@
-package Controller;
+package com.taxicab.controller;
 
+import com.taxicab.model.Driver;
+import com.taxicab.service.DriverService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/drivers")
 public class DriverController {
-    
+
+    @Autowired
+    private DriverService driverService;
+
+    // ─── POST /api/drivers/register ───────────────────────────────
+    // Called by DriverRegister.jsx
+    @PostMapping("/register")
+    public ResponseEntity<?> registerDriver(@RequestBody Driver driver) {
+        try {
+            return ResponseEntity.ok(driverService.registerDriver(driver));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ─── GET /api/drivers ─────────────────────────────────────────
+    // Called by admin ManageDrivers.jsx
+    @GetMapping
+    public ResponseEntity<List<Driver>> getAllDrivers() {
+        return ResponseEntity.ok(driverService.getAllDrivers());
+    }
+
+    // ─── GET /api/drivers/available ───────────────────────────────
+    // Called by BookRide.jsx to show available drivers
+    @GetMapping("/available")
+    public ResponseEntity<List<Driver>> getAvailableDrivers() {
+        return ResponseEntity.ok(driverService.getAvailableDrivers());
+    }
+
+    // ─── GET /api/drivers/{id} ────────────────────────────────────
+    // Called by DriverProfile.jsx
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDriver(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(driverService.getDriverById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ─── PUT /api/drivers/{id} ────────────────────────────────────
+    // Called by DriverProfile.jsx when updating info
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateDriver(@PathVariable Long id, @RequestBody Driver driver) {
+        try {
+            return ResponseEntity.ok(driverService.updateDriver(id, driver));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ─── PUT /api/drivers/{id}/availability ───────────────────────
+    // Called by Availability.jsx to toggle online/offline
+    @PutMapping("/{id}/availability")
+    public ResponseEntity<?> updateAvailability(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        try {
+            Driver.Availability availability =
+                    Driver.Availability.valueOf(body.get("availability"));
+            return ResponseEntity.ok(driverService.updateAvailability(id, availability));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ─── DELETE /api/drivers/{id} ─────────────────────────────────
+    // Called by admin to remove a driver
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
+        try {
+            driverService.deleteDriver(id);
+            return ResponseEntity.ok(Map.of("message", "Driver deleted successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }
