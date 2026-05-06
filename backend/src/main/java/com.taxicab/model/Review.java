@@ -1,7 +1,4 @@
-package model;
-
-public class Review {
-    package com.taxicab.model;
+package com.taxicab.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -57,4 +54,3 @@ import java.time.LocalDateTime;
         }
     }
 
-}
