@@ -1,4 +1,6 @@
-package service;
+package com.taxicab.service;
+
+import com.taxicab.model.Driver;
 
 public class ReviewService {
     package com.taxicab.service;

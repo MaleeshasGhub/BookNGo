@@ -1,7 +1,4 @@
-package Repository;
-
-public class ReviewRepository {
-    package com.taxicab.repository;
+package com.taxicab.repository;
 
 import com.taxicab.model.Driver;
 import com.taxicab.model.Review;
@@ -30,4 +27,4 @@ import java.util.List;
         boolean existsByRideRideIdAndPassengerUserId(Long rideId, Long passengerId);
     }
 
-}
+
