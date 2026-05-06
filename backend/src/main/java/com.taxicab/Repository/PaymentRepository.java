@@ -1,4 +1,4 @@
-package com.taxicab.repository;
+package com.taxicab.Repository;
 
 import com.taxicab.model.Payment;
 import com.taxicab.model.Ride;
