@@ -8,23 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-    @Repository
-    public interface ReviewRepository extends JpaRepository<Review, Long> {
+@Repository
+public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-        // Get all reviews for a specific driver
-        List<Review> findByDriver(Driver driver);
+    List<Review> findByDriver(Driver driver);
 
-        // Get all reviews by a specific passenger
-        List<Review> findByPassenger(User passenger);
+    List<Review> findByPassenger(User passenger);
 
-        // Get all visible reviews for a driver
-        List<Review> findByDriverAndStatus(Driver driver, Review.ReviewStatus status);
+    List<Review> findByDriverAndStatus(Driver driver, Review.ReviewStatus status);
 
-        // Get all reviews by status (for admin moderation)
-        List<Review> findByStatus(Review.ReviewStatus status);
+    List<Review> findByStatus(Review.ReviewStatus status);
 
-        // Check if passenger already reviewed a ride
-        boolean existsByRideRideIdAndPassengerUserId(Long rideId, Long passengerId);
-    }
-
-
+    boolean existsByRideRideIdAndPassengerUserId(Long rideId, Long passengerId);
+}
