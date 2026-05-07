@@ -17,8 +17,11 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     // Get all rides by a specific driver
     List<Ride> findByDriver(Driver driver);
 
-    // Get all pending rides (not yet accepted by a driver)
+    // Get all rides by status
     List<Ride> findByStatus(Ride.RideStatus status);
+
+
+    long countByStatus(Ride.RideStatus status);
 
     // Get ride history for a passenger (completed rides)
     List<Ride> findByPassengerAndStatus(User passenger, Ride.RideStatus status);
