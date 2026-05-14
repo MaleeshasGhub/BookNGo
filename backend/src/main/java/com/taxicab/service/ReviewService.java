@@ -3,6 +3,7 @@ package com.taxicab.service;
 import com.taxicab.model.*;
 import com.taxicab.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class ReviewService {
     @Autowired private DriverRepository  driverRepository;
 
     // CREATE REVIEW
-    public Review submitReview(Long rideId, Long passengerId, int rating, String comment) {
+    public Review submitReview(@NonNull Long rideId, @NonNull Long passengerId, int rating, String comment) {
 
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
@@ -55,7 +56,7 @@ public class ReviewService {
     }
 
     // GET DRIVER REVIEWS
-    public List<Review> getReviewsByDriver(Long driverId) {
+    public List<Review> getReviewsByDriver(@NonNull Long driverId) {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
 
@@ -76,7 +77,7 @@ public class ReviewService {
     }
 
     // GET REVIEW BY ID
-    public Review getReviewById(Long id) {
+    public Review getReviewById(@NonNull Long id) {
         return reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
     }
@@ -96,21 +97,21 @@ public class ReviewService {
     }
 
     // HIDE REVIEW
-    public Review hideReview(Long id) {
+    public Review hideReview(@NonNull Long id) {
         Review review = getReviewById(id);
         review.setStatus(Review.ReviewStatus.HIDDEN);
         return reviewRepository.save(review);
     }
 
     // SHOW REVIEW
-    public Review showReview(Long id) {
+    public Review showReview(@NonNull Long id) {
         Review review = getReviewById(id);
         review.setStatus(Review.ReviewStatus.VISIBLE);
         return reviewRepository.save(review);
     }
 
     // DELETE REVIEW
-    public void deleteReview(Long id) {
+    public void deleteReview(@NonNull Long id) {
         if (!reviewRepository.existsById(id)) {
             throw new RuntimeException("Review not found with id: " + id);
         }

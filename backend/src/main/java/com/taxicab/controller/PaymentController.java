@@ -4,6 +4,7 @@ import com.taxicab.model.Payment;
 import com.taxicab.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class PaymentController {
     // ─── GET /api/payments/{id} ───────────────────────────────────
     // Called by Invoice.jsx to show receipt
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPayment(@PathVariable Long id) {
+    public ResponseEntity<?> getPayment(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(paymentService.getPaymentById(id));
         } catch (RuntimeException e) {
@@ -52,7 +53,7 @@ public class PaymentController {
     // ─── GET /api/payments/passenger/{passengerId} ────────────────
     // Called by PaymentHistory.jsx
     @GetMapping("/passenger/{passengerId}")
-    public ResponseEntity<?> getPaymentsByPassenger(@PathVariable Long passengerId) {
+    public ResponseEntity<?> getPaymentsByPassenger(@PathVariable @NonNull Long passengerId) {
         try {
             return ResponseEntity.ok(paymentService.getPaymentsByPassenger(passengerId));
         } catch (RuntimeException e) {
@@ -63,7 +64,7 @@ public class PaymentController {
     // ─── GET /api/payments/ride/{rideId} ──────────────────────────
     // Called by Invoice.jsx to get payment for a specific ride
     @GetMapping("/ride/{rideId}")
-    public ResponseEntity<?> getPaymentByRide(@PathVariable Long rideId) {
+    public ResponseEntity<?> getPaymentByRide(@PathVariable @NonNull Long rideId) {
         try {
             return ResponseEntity.ok(paymentService.getPaymentByRide(rideId));
         } catch (RuntimeException e) {
@@ -75,7 +76,7 @@ public class PaymentController {
     // Called by admin to update payment status
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(
-            @PathVariable Long id,
+            @PathVariable @NonNull Long id,
             @RequestBody Map<String, String> body) {
         try {
             Payment.PaymentStatus status =
@@ -89,7 +90,7 @@ public class PaymentController {
     // ─── DELETE /api/payments/{id} ────────────────────────────────
     // Called by admin to remove failed/invalid payments
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePayment(@PathVariable Long id) {
+    public ResponseEntity<?> deletePayment(@PathVariable @NonNull Long id) {
         try {
             paymentService.deletePayment(id);
             return ResponseEntity.ok(Map.of("message", "Payment deleted successfully"));

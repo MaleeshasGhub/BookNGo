@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 
 // C01: User Management
 import Register  from "./pages/user/Register";
@@ -16,9 +16,9 @@ import TrackRide   from "./pages/ride/TrackRide";
 import RideHistory from "./pages/ride/RideHistory";
 
 // C04: Payment
-import Payment        from "./pages/payment/Payment";
-import PaymentHistory from "./pages/payment/PaymentHistory";
-import Invoice        from "./pages/payment/Invoice";
+import Payment            from "./pages/payment/Payment";
+import PaymentHistory     from "./pages/payment/PaymentHistory";
+import Invoice            from "./pages/payment/Invoice";
 
 // C05: Admin Management
 import Dashboard     from "./pages/admin/Dashboard";
@@ -34,6 +34,26 @@ import Moderation   from "./pages/feedback/Moderation";
 function App() {
   return (
     <Router>
+      {/* Temporary Navigation Bar for Development */}
+      <nav style={{ 
+        padding: "10px", 
+        background: "#222", 
+        color: "white",
+        display: "flex", 
+        gap: "15px", 
+        flexWrap: "wrap",
+        fontSize: "14px",
+        fontFamily: "sans-serif"
+      }}>
+        <Link to="/login" style={{ color: "#4db8ff" }}>Login</Link>
+        <Link to="/profile" style={{ color: "#4db8ff" }}>My Profile</Link>
+        <Link to="/admin/dashboard" style={{ color: "#4db8ff" }}>Admin Dashboard</Link>
+        <Link to="/ride/book" style={{ color: "#4db8ff" }}>Book Ride</Link>
+        <Link to="/driver/availability" style={{ color: "#4db8ff" }}>Driver Status</Link>
+        <Link to="/ride/history" style={{ color: "#4db8ff" }}>Ride History</Link>
+        <Link to="/feedback/moderation" style={{ color: "#4db8ff" }}>Mod Tools</Link>
+      </nav>
+
       <Routes>
         {/* Default */}
         <Route path="/" element={<Navigate to="/login" />} />

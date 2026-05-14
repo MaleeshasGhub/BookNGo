@@ -7,6 +7,7 @@ import com.taxicab.service.RideService;
 import com.taxicab.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class AdminController {
 
     // GET ADMIN BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAdmin(@PathVariable Long id) {
+    public ResponseEntity<?> getAdmin(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(adminService.getAdminById(id));
         } catch (RuntimeException e) {
@@ -77,7 +78,7 @@ public class AdminController {
 
     // UPDATE ADMIN
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAdmin(@PathVariable Long id, @RequestBody Admin admin) {
+    public ResponseEntity<?> updateAdmin(@PathVariable @NonNull Long id, @RequestBody Admin admin) {
         try {
             return ResponseEntity.ok(adminService.updateAdmin(id, admin));
         } catch (RuntimeException e) {

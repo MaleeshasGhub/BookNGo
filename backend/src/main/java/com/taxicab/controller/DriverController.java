@@ -4,6 +4,7 @@ import com.taxicab.model.Driver;
 import com.taxicab.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class DriverController {
     // ─── GET /api/drivers/{id} ────────────────────────────────────
     // Called by DriverProfile.jsx
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDriver(@PathVariable Long id) {
+    public ResponseEntity<?> getDriver(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(driverService.getDriverById(id));
         } catch (RuntimeException e) {
@@ -55,7 +56,7 @@ public class DriverController {
     // ─── PUT /api/drivers/{id} ────────────────────────────────────
     // Called by DriverProfile.jsx when updating info
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDriver(@PathVariable Long id, @RequestBody Driver driver) {
+    public ResponseEntity<?> updateDriver(@PathVariable @NonNull Long id, @RequestBody Driver driver) {
         try {
             return ResponseEntity.ok(driverService.updateDriver(id, driver));
         } catch (RuntimeException e) {
@@ -67,7 +68,7 @@ public class DriverController {
     // Called by Availability.jsx to toggle online/offline
     @PutMapping("/{id}/availability")
     public ResponseEntity<?> updateAvailability(
-            @PathVariable Long id,
+            @PathVariable @NonNull Long id,
             @RequestBody Map<String, String> body) {
         try {
             Driver.Availability availability =
@@ -81,7 +82,7 @@ public class DriverController {
     // ─── DELETE /api/drivers/{id} ─────────────────────────────────
     // Called by admin to remove a driver
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
+    public ResponseEntity<?> deleteDriver(@PathVariable @NonNull Long id) {
         try {
             driverService.deleteDriver(id);
             return ResponseEntity.ok(Map.of("message", "Driver deleted successfully"));

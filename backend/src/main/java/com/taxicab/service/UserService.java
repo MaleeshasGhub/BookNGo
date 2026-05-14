@@ -3,10 +3,11 @@ package com.taxicab.service;
 import com.taxicab.model.User;
 import com.taxicab.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -35,7 +36,7 @@ public class UserService {
     }
 
     // ─── READ: Get user by ID ─────────────────────────────────────
-    public User getUserById(Long id) {
+    public User getUserById(@NonNull Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }

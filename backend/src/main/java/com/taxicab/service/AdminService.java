@@ -3,6 +3,7 @@ package com.taxicab.service;
 // Spring
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 
 // Models
 import com.taxicab.model.Admin;
@@ -41,7 +42,7 @@ public class AdminService {
     }
 
     // READ
-    public Admin getAdminById(Long id) {
+    public Admin getAdminById(@NonNull Long id) {
         return adminRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Admin not found with id: " + id));
     }
@@ -69,7 +70,7 @@ public class AdminService {
     }
 
     // UPDATE
-    public Admin updateAdmin(Long id, Admin updatedAdmin) {
+    public Admin updateAdmin(@NonNull Long id, Admin updatedAdmin) {
         Admin existing = getAdminById(id);
         existing.setFullName(updatedAdmin.getFullName());
         existing.setPhone(updatedAdmin.getPhone());
@@ -78,7 +79,7 @@ public class AdminService {
     }
 
     // DELETE
-    public void deleteAdmin(Long id) {
+    public void deleteAdmin(@NonNull Long id) {
         if (!adminRepository.existsById(id)) {
             throw new RuntimeException("Admin not found with id: " + id);
         }
@@ -86,7 +87,7 @@ public class AdminService {
     }
 
     // ADMIN ACTIONS
-    public User deactivateUser(Long userId) {
+    public User deactivateUser(@NonNull Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -94,7 +95,7 @@ public class AdminService {
         return userRepository.save(user);
     }
 
-    public User reactivateUser(Long userId) {
+    public User reactivateUser(@NonNull Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

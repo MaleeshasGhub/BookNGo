@@ -7,6 +7,7 @@ import com.taxicab.repository.DriverRepository;
 import com.taxicab.repository.RideRepository;
 import com.taxicab.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class RideService {
     }
 
     // ─── READ: Get ride by ID ─────────────────────────────────────
-    public Ride getRideById(Long id) {
+    public Ride getRideById(@NonNull Long id) {
         return rideRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ride not found with id: " + id));
     }

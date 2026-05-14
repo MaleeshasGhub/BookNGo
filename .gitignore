@@ -8,3 +8,5 @@ frontend/dist/
 
 .DS Store
 Thumbs.db
+
+.postman/
