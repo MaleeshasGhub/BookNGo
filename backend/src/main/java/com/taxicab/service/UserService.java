@@ -32,6 +32,11 @@ public class UserService {
         if (!user.getPassword().equals(password)) {
             throw new RuntimeException("Invalid password");
         }
+
+        if (user.getStatus() == User.Status.INACTIVE) {
+            throw new RuntimeException("Your account is pending admin approval.");
+        }
+
         return user;
     }
 
@@ -47,16 +52,21 @@ public class UserService {
     }
 
     // ─── UPDATE: Update user profile ──────────────────────────────
-    public User updateUser(Long id, User updatedUser) {
+    public User updateUser(@NonNull Long id, User updatedUser) {
         User existing = getUserById(id);
         existing.setFullName(updatedUser.getFullName());
         existing.setPhone(updatedUser.getPhone());
         existing.setEmail(updatedUser.getEmail());
+        
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+            existing.setPassword(updatedUser.getPassword());
+        }
+        
         return userRepository.save(existing);
     }
 
     // ─── DELETE: Delete user account ──────────────────────────────
-    public void deleteUser(Long id) {
+    public void deleteUser(@NonNull Long id) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found with id: " + id);
         }

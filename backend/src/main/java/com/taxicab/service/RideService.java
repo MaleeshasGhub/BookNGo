@@ -20,7 +20,7 @@ public class RideService {
     @Autowired private DriverRepository driverRepository;
 
     // ─── CREATE: Book a new ride ──────────────────────────────────
-    public Ride bookRide(Long passengerId, Ride ride) {
+    public Ride bookRide(@NonNull Long passengerId, Ride ride) {
         User passenger = userRepository.findById(passengerId)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
 
@@ -46,14 +46,14 @@ public class RideService {
     }
 
     // ─── READ: Get rides by passenger ────────────────────────────
-    public List<Ride> getRidesByPassenger(Long passengerId) {
+    public List<Ride> getRidesByPassenger(@NonNull Long passengerId) {
         User passenger = userRepository.findById(passengerId)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
         return rideRepository.findByPassenger(passenger);
     }
 
     // ─── READ: Get rides by driver ────────────────────────────────
-    public List<Ride> getRidesByDriver(Long driverId) {
+    public List<Ride> getRidesByDriver(@NonNull Long driverId) {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
         return rideRepository.findByDriver(driver);
@@ -65,7 +65,7 @@ public class RideService {
     }
 
     // ─── UPDATE: Update ride status ───────────────────────────────
-    public Ride updateRideStatus(Long rideId, Ride.RideStatus newStatus, Long driverId) {
+    public Ride updateRideStatus(@NonNull Long rideId, Ride.RideStatus newStatus, Long driverId) {
         Ride ride = getRideById(rideId);
 
         if (driverId != null) {
@@ -87,7 +87,7 @@ public class RideService {
     }
 
     // ─── DELETE: Cancel a ride ────────────────────────────────────
-    public Ride cancelRide(Long rideId) {
+    public Ride cancelRide(@NonNull Long rideId) {
         Ride ride = getRideById(rideId);
         if (ride.getStatus() != Ride.RideStatus.PENDING) {
             throw new RuntimeException("Only pending rides can be cancelled.");

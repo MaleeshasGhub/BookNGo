@@ -4,6 +4,7 @@ import com.taxicab.model.User;
 import com.taxicab.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class UserController {
     // ─── GET /api/users/{id} ──────────────────────────────────────
     // Called by Profile.jsx to load user data
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable Long id) {
+    public ResponseEntity<?> getUser(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(userService.getUserById(id));
         } catch (RuntimeException e) {
@@ -61,7 +62,7 @@ public class UserController {
     // ─── PUT /api/users/{id} ──────────────────────────────────────
     // Called by Profile.jsx when user updates their info
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable @NonNull Long id, @RequestBody User user) {
         try {
             return ResponseEntity.ok(userService.updateUser(id, user));
         } catch (RuntimeException e) {
@@ -72,7 +73,7 @@ public class UserController {
     // ─── DELETE /api/users/{id} ───────────────────────────────────
     // Called by admin or user to delete account
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable @NonNull Long id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.ok(Map.of("message", "User deleted successfully"));

@@ -4,6 +4,7 @@ import com.taxicab.model.Ride;
 import com.taxicab.service.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class RideController {
     // Called by BookRide.jsx when passenger submits booking
     @PostMapping("/book/{passengerId}")
     public ResponseEntity<?> bookRide(
-            @PathVariable Long passengerId,
+            @PathVariable @NonNull Long passengerId,
             @RequestBody Ride ride) {
         try {
             return ResponseEntity.ok(rideService.bookRide(passengerId, ride));
@@ -46,7 +47,7 @@ public class RideController {
     // ─── GET /api/rides/{id} ──────────────────────────────────────
     // Called by TrackRide.jsx
     @GetMapping("/{id}")
-    public ResponseEntity<?> getRide(@PathVariable Long id) {
+    public ResponseEntity<?> getRide(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(rideService.getRideById(id));
         } catch (RuntimeException e) {
@@ -57,7 +58,7 @@ public class RideController {
     // ─── GET /api/rides/passenger/{passengerId} ───────────────────
     // Called by RideHistory.jsx (passenger view)
     @GetMapping("/passenger/{passengerId}")
-    public ResponseEntity<?> getRidesByPassenger(@PathVariable Long passengerId) {
+    public ResponseEntity<?> getRidesByPassenger(@PathVariable @NonNull Long passengerId) {
         try {
             return ResponseEntity.ok(rideService.getRidesByPassenger(passengerId));
         } catch (RuntimeException e) {
@@ -68,7 +69,7 @@ public class RideController {
     // ─── GET /api/rides/driver/{driverId} ────────────────────────
     // Called by driver to see their ride history
     @GetMapping("/driver/{driverId}")
-    public ResponseEntity<?> getRidesByDriver(@PathVariable Long driverId) {
+    public ResponseEntity<?> getRidesByDriver(@PathVariable @NonNull Long driverId) {
         try {
             return ResponseEntity.ok(rideService.getRidesByDriver(driverId));
         } catch (RuntimeException e) {
@@ -80,7 +81,7 @@ public class RideController {
     // Called by driver to accept/complete a ride
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(
-            @PathVariable Long id,
+            @PathVariable @NonNull Long id,
             @RequestBody Map<String, String> body) {
         try {
             Ride.RideStatus status = Ride.RideStatus.valueOf(body.get("status"));
@@ -95,7 +96,7 @@ public class RideController {
     // ─── DELETE /api/rides/{id}/cancel ────────────────────────────
     // Called by passenger to cancel a pending ride
     @DeleteMapping("/{id}/cancel")
-    public ResponseEntity<?> cancelRide(@PathVariable Long id) {
+    public ResponseEntity<?> cancelRide(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(rideService.cancelRide(id));
         } catch (RuntimeException e) {

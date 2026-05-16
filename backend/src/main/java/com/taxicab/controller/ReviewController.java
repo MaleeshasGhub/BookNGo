@@ -4,6 +4,7 @@ import com.taxicab.model.Review;
 import com.taxicab.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class ReviewController {
 
     // GET REVIEW BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getReview(@PathVariable Long id) {
+    public ResponseEntity<?> getReview(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(reviewService.getReviewById(id));
         } catch (RuntimeException e) {
@@ -51,7 +52,7 @@ public class ReviewController {
 
     // GET DRIVER REVIEWS
     @GetMapping("/driver/{driverId}")
-    public ResponseEntity<?> getReviewsByDriver(@PathVariable Long driverId) {
+    public ResponseEntity<?> getReviewsByDriver(@PathVariable @NonNull Long driverId) {
         try {
             return ResponseEntity.ok(reviewService.getReviewsByDriver(driverId));
         } catch (RuntimeException e) {
@@ -61,7 +62,7 @@ public class ReviewController {
 
     // GET PASSENGER REVIEWS
     @GetMapping("/passenger/{passengerId}")
-    public ResponseEntity<?> getReviewsByPassenger(@PathVariable Long passengerId) {
+    public ResponseEntity<?> getReviewsByPassenger(@PathVariable @NonNull Long passengerId) {
         try {
             return ResponseEntity.ok(reviewService.getReviewsByPassenger(passengerId));
         } catch (RuntimeException e) {
@@ -72,7 +73,7 @@ public class ReviewController {
     // UPDATE REVIEW
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReview(
-            @PathVariable Long id,
+            @PathVariable @NonNull Long id,
             @RequestBody Map<String, String> body) {
 
         try {
@@ -89,7 +90,7 @@ public class ReviewController {
 
     // HIDE REVIEW
     @PutMapping("/{id}/hide")
-    public ResponseEntity<?> hideReview(@PathVariable Long id) {
+    public ResponseEntity<?> hideReview(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(reviewService.hideReview(id));
         } catch (RuntimeException e) {
@@ -99,7 +100,7 @@ public class ReviewController {
 
     // SHOW REVIEW
     @PutMapping("/{id}/show")
-    public ResponseEntity<?> showReview(@PathVariable Long id) {
+    public ResponseEntity<?> showReview(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(reviewService.showReview(id));
         } catch (RuntimeException e) {
@@ -109,7 +110,7 @@ public class ReviewController {
 
     // DELETE REVIEW
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteReview(@PathVariable Long id) {
+    public ResponseEntity<?> deleteReview(@PathVariable @NonNull Long id) {
         try {
             reviewService.deleteReview(id);
             return ResponseEntity.ok(Map.of("message", "Review deleted successfully"));

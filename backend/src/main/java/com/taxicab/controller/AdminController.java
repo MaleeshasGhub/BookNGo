@@ -64,6 +64,16 @@ public class AdminController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    // APPROVE USER
+    @PutMapping("/users/{id}/approve")
+    public ResponseEntity<?> approveUser(@PathVariable @NonNull Long id) {
+        try {
+            return ResponseEntity.ok(adminService.reactivateUser(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     // DRIVERS
     @GetMapping("/drivers")
     public ResponseEntity<?> getAllDrivers() {

@@ -21,6 +21,7 @@ public class DriverService {
             throw new RuntimeException("License number already registered.");
         }
         driver.setUserType(User.UserType.DRIVER);
+        driver.setStatus(User.Status.INACTIVE); // Pending Admin Approval
         return driverRepository.save(driver);
     }
 

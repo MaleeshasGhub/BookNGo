@@ -64,7 +64,7 @@ public class ReviewService {
     }
 
     // GET PASSENGER REVIEWS
-    public List<Review> getReviewsByPassenger(Long passengerId) {
+    public List<Review> getReviewsByPassenger(@NonNull Long passengerId) {
         User passenger = userRepository.findById(passengerId)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
 
@@ -83,7 +83,7 @@ public class ReviewService {
     }
 
     // UPDATE REVIEW
-    public Review updateReview(Long id, int rating, String comment) {
+    public Review updateReview(@NonNull Long id, int rating, String comment) {
         Review review = getReviewById(id);
 
         if (rating < 1 || rating > 5) {
