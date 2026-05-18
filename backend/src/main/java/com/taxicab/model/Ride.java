@@ -7,9 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
-// ─── Encapsulation: all ride data secured in this class ──────────────────────
-// ─── Inheritance:  StandardRide and PremiumRide extend this class ─────────────
-// ─── Polymorphism: fare calculation differs per ride type ─────────────────────
+
 
 @Data
 @NoArgsConstructor
@@ -50,9 +48,9 @@ public class Ride {
     public enum RideType   { STANDARD, PREMIUM }
     public enum RideStatus { PENDING, ACCEPTED, ONGOING, COMPLETED, CANCELLED }
 
-    // ─── Polymorphism: subclasses override this to calculate
-    //     fare differently based on ride type ────────────────────
+    
+    
     public Double calculateFare(double distanceKm) {
-        return distanceKm * 50.0; // base rate: Rs.50 per km
+        return distanceKm * 50.0; 
     }
 }

@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-// ─── Inheritance: PremiumRide extends Ride ────────────────────────────────────
-// ─── Polymorphism: overrides calculateFare() with premium pricing ─────────────
+
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -17,9 +16,9 @@ import lombok.NoArgsConstructor;
 public class PremiumRide extends Ride {
 
     private boolean airConditioned = true;
-    private String  vehiclePreference; // e.g. "SUV", "Luxury Sedan"
+    private String  vehiclePreference; 
 
-    // ─── Polymorphism: premium rate — Rs.100 per km ───────────────
+    
     @Override
     public Double calculateFare(double distanceKm) {
         return distanceKm * 100.0;

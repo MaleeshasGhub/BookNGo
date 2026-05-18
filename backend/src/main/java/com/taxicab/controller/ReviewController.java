@@ -17,7 +17,7 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    // CREATE REVIEW
+    
     @PostMapping
     public ResponseEntity<?> submitReview(@RequestBody Map<String, String> body) {
         try {
@@ -34,13 +34,13 @@ public class ReviewController {
         }
     }
 
-    // GET ALL REVIEWS
+    
     @GetMapping
     public ResponseEntity<List<Review>> getAllReviews() {
         return ResponseEntity.ok(reviewService.getAllReviews());
     }
 
-    // GET REVIEW BY ID
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getReview(@PathVariable @NonNull Long id) {
         try {
@@ -50,7 +50,7 @@ public class ReviewController {
         }
     }
 
-    // GET DRIVER REVIEWS
+    
     @GetMapping("/driver/{driverId}")
     public ResponseEntity<?> getReviewsByDriver(@PathVariable @NonNull Long driverId) {
         try {
@@ -60,7 +60,7 @@ public class ReviewController {
         }
     }
 
-    // GET PASSENGER REVIEWS
+    
     @GetMapping("/passenger/{passengerId}")
     public ResponseEntity<?> getReviewsByPassenger(@PathVariable @NonNull Long passengerId) {
         try {
@@ -70,7 +70,7 @@ public class ReviewController {
         }
     }
 
-    // UPDATE REVIEW
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReview(
             @PathVariable @NonNull Long id,
@@ -88,7 +88,7 @@ public class ReviewController {
         }
     }
 
-    // HIDE REVIEW
+    
     @PutMapping("/{id}/hide")
     public ResponseEntity<?> hideReview(@PathVariable @NonNull Long id) {
         try {
@@ -98,7 +98,7 @@ public class ReviewController {
         }
     }
 
-    // SHOW REVIEW
+    
     @PutMapping("/{id}/show")
     public ResponseEntity<?> showReview(@PathVariable @NonNull Long id) {
         try {
@@ -108,7 +108,7 @@ public class ReviewController {
         }
     }
 
-    // DELETE REVIEW
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable @NonNull Long id) {
         try {

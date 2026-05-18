@@ -7,6 +7,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -15,16 +18,19 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // ─── CREATE: Register a new user ─────────────────────────────
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    
     public User registerUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already registered: " + user.getEmail());
         }
-        // In production: hash the password before saving
+        
         return userRepository.save(user);
     }
 
-    // ─── READ: Login ──────────────────────────────────────────────
+    
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -40,18 +46,18 @@ public class UserService {
         return user;
     }
 
-    // ─── READ: Get user by ID ─────────────────────────────────────
+    
     public User getUserById(@NonNull Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-    // ─── READ: Get all users (admin use) ──────────────────────────
+    
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // ─── UPDATE: Update user profile ──────────────────────────────
+    
     public User updateUser(@NonNull Long id, User updatedUser) {
         User existing = getUserById(id);
         existing.setFullName(updatedUser.getFullName());
@@ -65,11 +71,17 @@ public class UserService {
         return userRepository.save(existing);
     }
 
-    // ─── DELETE: Delete user account ──────────────────────────────
+    
+    @Transactional
     public void deleteUser(@NonNull Long id) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found with id: " + id);
         }
+        
+        entityManager.createQuery("DELETE FROM Review r WHERE r.passenger.userId = :id OR r.driver.userId = :id").setParameter("id", id).executeUpdate();
+        entityManager.createQuery("DELETE FROM Payment p WHERE p.ride.rideId IN (SELECT r.rideId FROM Ride r WHERE r.passenger.userId = :id OR r.driver.userId = :id)").setParameter("id", id).executeUpdate();
+        entityManager.createQuery("DELETE FROM Ride r WHERE r.passenger.userId = :id OR r.driver.userId = :id").setParameter("id", id).executeUpdate();
+        
         userRepository.deleteById(id);
     }
 }

@@ -20,8 +20,12 @@ export default function PassengerProfileScreen() {
   const [rides, setRides] = useState<any[]>([]);
   const [loadingRides, setLoadingRides] = useState(true);
 
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loadingPayments, setLoadingPayments] = useState(true);
+
   useEffect(() => {
     fetchRides();
+    fetchPayments();
   }, []);
 
   const fetchRides = async () => {
@@ -33,6 +37,65 @@ export default function PassengerProfileScreen() {
       console.error("Failed to fetch rides", err);
     } finally {
       setLoadingRides(false);
+    }
+  };
+
+  const fetchPayments = async () => {
+    if (!user?.userId) return;
+    try {
+      const res = await api.get(`/payments/passenger/${user.userId}`);
+      setPayments(res.data);
+    } catch (err) {
+      console.error("Failed to fetch payments", err);
+    } finally {
+      setLoadingPayments(false);
+    }
+  };
+
+  const handleDeletePayment = async (paymentId: number) => {
+    const executeDelete = async () => {
+      try {
+        await api.delete(`/payments/${paymentId}`);
+        fetchPayments();
+      } catch (err: any) {
+        if (Platform.OS === 'web') window.alert(err.response?.data?.error || 'Failed to delete payment');
+        else Alert.alert('Error', err.response?.data?.error || 'Failed to delete payment');
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm('Are you sure you want to remove this payment from your history?')) {
+        executeDelete();
+      }
+    } else {
+      Alert.alert('Delete Payment', 'Are you sure you want to remove this payment from your history?', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: executeDelete }
+      ]);
+    }
+  };
+
+  const handleDeleteRide = async (rideId: number) => {
+    const executeDelete = async () => {
+      try {
+        await api.delete(`/rides/${rideId}`);
+        fetchRides();
+        fetchPayments(); // Refresh payments as well in case they changed
+      } catch (err: any) {
+        if (Platform.OS === 'web') window.alert(err.response?.data?.error || 'Failed to delete ride');
+        else Alert.alert('Error', err.response?.data?.error || 'Failed to delete ride');
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm('Are you sure you want to remove this ride from your history? Associated payments and reviews will also be removed.')) {
+        executeDelete();
+      }
+    } else {
+      Alert.alert('Delete Ride', 'Are you sure you want to remove this ride from your history? Associated payments and reviews will also be removed.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: executeDelete }
+      ]);
     }
   };
 
@@ -68,6 +131,32 @@ export default function PassengerProfileScreen() {
             router.replace('/');
           }
         }
+      ]);
+    }
+  };
+
+  const executeDeleteAccount = async () => {
+    try {
+      await api.delete(`/users/${user?.userId}`);
+      await logout();
+      if (Platform.OS === 'web') window.location.href = '/';
+      else router.replace('/');
+    } catch (err: any) {
+      if (Platform.OS === 'web') window.alert('Failed to delete account');
+      else Alert.alert('Error', 'Failed to delete account');
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Are you sure you want to PERMANENTLY delete your account? This action cannot be undone.');
+      if (confirmed) {
+        executeDeleteAccount();
+      }
+    } else {
+      Alert.alert('Delete Account', 'Are you sure you want to PERMANENTLY delete your account?', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete Forever', style: 'destructive', onPress: executeDeleteAccount }
       ]);
     }
   };
@@ -153,23 +242,64 @@ export default function PassengerProfileScreen() {
                   {new Date(ride.createdAt || Date.now()).toLocaleDateString()} • {ride.rideType}
                 </Text>
               </View>
-              <View style={styles.rideCardRight}>
-                <Text style={styles.ridePrice}>LKR {ride.fare ? ride.fare.toLocaleString() : '---'}</Text>
-                <View style={[
-                  styles.statusBadge, 
-                  ride.status === 'COMPLETED' ? styles.statusCompleted : styles.statusPending
-                ]}>
-                  <Text style={[
-                    styles.statusText,
-                    ride.status === 'COMPLETED' ? styles.statusTextCompleted : styles.statusTextPending
+              <View style={[styles.rideCardRight, { alignItems: 'center', flexDirection: 'row', gap: 16 }]}>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={styles.ridePrice}>LKR {ride.fare ? ride.fare.toLocaleString() : '---'}</Text>
+                  <View style={[
+                    styles.statusBadge, 
+                    ride.status === 'COMPLETED' ? styles.statusCompleted : styles.statusPending
                   ]}>
-                    {ride.status || 'PENDING'}
-                  </Text>
+                    <Text style={[
+                      styles.statusText,
+                      ride.status === 'COMPLETED' ? styles.statusTextCompleted : styles.statusTextPending
+                    ]}>
+                      {ride.status || 'PENDING'}
+                    </Text>
+                  </View>
                 </View>
+                <TouchableOpacity onPress={() => handleDeleteRide(ride.rideId || ride.id)}>
+                  <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                </TouchableOpacity>
               </View>
             </View>
           ))
         )}
+
+        <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Payment History</Text>
+        
+        {loadingPayments ? (
+          <ActivityIndicator size="large" color="#10b981" style={{ marginTop: 20 }} />
+        ) : payments.length === 0 ? (
+          <View style={[styles.glassPanel, { alignItems: 'center', padding: 32 }]}>
+            <Text style={styles.noRidesText}>No payments found.</Text>
+          </View>
+        ) : (
+          payments.map((payment, index) => (
+            <View key={payment.paymentId || index} style={styles.rideCard}>
+              <View style={styles.rideCardLeft}>
+                <Text style={styles.rideLocations}>Ride #{payment.ride?.rideId || 'N/A'}</Text>
+                <Text style={styles.rideDetails}>
+                  {payment.paidAt ? new Date(payment.paidAt).toLocaleDateString() : 'Unknown Date'} • {payment.method}
+                </Text>
+              </View>
+              <View style={[styles.rideCardRight, { alignItems: 'center', flexDirection: 'row', gap: 16 }]}>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={[styles.ridePrice, { color: '#10b981' }]}>LKR {payment.amount ? payment.amount.toLocaleString() : '---'}</Text>
+                  <View style={[styles.statusBadge, styles.statusCompleted]}>
+                    <Text style={[styles.statusText, styles.statusTextCompleted]}>{payment.status}</Text>
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => handleDeletePayment(payment.paymentId)}>
+                  <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
+
+        <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
+          <Text style={styles.deleteAccountText}>Delete My Account</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -377,5 +507,18 @@ const styles = StyleSheet.create({
   },
   statusTextPending: {
     color: '#ef4444',
+  },
+  deleteAccountButton: { 
+    marginTop: 32, 
+    marginBottom: 40, 
+    paddingVertical: 12, 
+    borderTopWidth: 1, 
+    borderTopColor: 'rgba(239,68,68,0.2)', 
+    alignItems: 'center' 
+  },
+  deleteAccountText: { 
+    color: '#ef4444', 
+    fontWeight: 'bold', 
+    fontSize: 16 
   },
 });

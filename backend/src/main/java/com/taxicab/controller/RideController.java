@@ -17,8 +17,8 @@ public class RideController {
     @Autowired
     private RideService rideService;
 
-    // ─── POST /api/rides/book/{passengerId} ───────────────────────
-    // Called by BookRide.jsx when passenger submits booking
+    
+    
     @PostMapping("/book/{passengerId}")
     public ResponseEntity<?> bookRide(
             @PathVariable @NonNull Long passengerId,
@@ -30,22 +30,22 @@ public class RideController {
         }
     }
 
-    // ─── GET /api/rides ───────────────────────────────────────────
-    // Called by admin MonitorRides.jsx
+    
+    
     @GetMapping
     public ResponseEntity<List<Ride>> getAllRides() {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
-    // ─── GET /api/rides/pending ───────────────────────────────────
-    // Called by driver to see available ride requests
+    
+    
     @GetMapping("/pending")
     public ResponseEntity<List<Ride>> getPendingRides() {
         return ResponseEntity.ok(rideService.getPendingRides());
     }
 
-    // ─── GET /api/rides/{id} ──────────────────────────────────────
-    // Called by TrackRide.jsx
+    
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getRide(@PathVariable @NonNull Long id) {
         try {
@@ -55,8 +55,8 @@ public class RideController {
         }
     }
 
-    // ─── GET /api/rides/passenger/{passengerId} ───────────────────
-    // Called by RideHistory.jsx (passenger view)
+    
+    
     @GetMapping("/passenger/{passengerId}")
     public ResponseEntity<?> getRidesByPassenger(@PathVariable @NonNull Long passengerId) {
         try {
@@ -66,8 +66,8 @@ public class RideController {
         }
     }
 
-    // ─── GET /api/rides/driver/{driverId} ────────────────────────
-    // Called by driver to see their ride history
+    
+    
     @GetMapping("/driver/{driverId}")
     public ResponseEntity<?> getRidesByDriver(@PathVariable @NonNull Long driverId) {
         try {
@@ -77,8 +77,8 @@ public class RideController {
         }
     }
 
-    // ─── PUT /api/rides/{id}/status ───────────────────────────────
-    // Called by driver to accept/complete a ride
+    
+    
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(
             @PathVariable @NonNull Long id,
@@ -93,12 +93,24 @@ public class RideController {
         }
     }
 
-    // ─── DELETE /api/rides/{id}/cancel ────────────────────────────
-    // Called by passenger to cancel a pending ride
+    
+    
     @DeleteMapping("/{id}/cancel")
     public ResponseEntity<?> cancelRide(@PathVariable @NonNull Long id) {
         try {
             return ResponseEntity.ok(rideService.cancelRide(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRide(@PathVariable @NonNull Long id) {
+        try {
+            rideService.deleteRide(id);
+            return ResponseEntity.ok(Map.of("message", "Ride deleted successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

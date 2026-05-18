@@ -17,8 +17,8 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
-    // ─── POST /api/drivers/register ───────────────────────────────
-    // Called by DriverRegister.jsx
+    
+    
     @PostMapping("/register")
     public ResponseEntity<?> registerDriver(@RequestBody Driver driver) {
         try {
@@ -28,22 +28,22 @@ public class DriverController {
         }
     }
 
-    // ─── GET /api/drivers ─────────────────────────────────────────
-    // Called by admin ManageDrivers.jsx
+    
+    
     @GetMapping
     public ResponseEntity<List<Driver>> getAllDrivers() {
         return ResponseEntity.ok(driverService.getAllDrivers());
     }
 
-    // ─── GET /api/drivers/available ───────────────────────────────
-    // Called by BookRide.jsx to show available drivers
+    
+    
     @GetMapping("/available")
     public ResponseEntity<List<Driver>> getAvailableDrivers() {
         return ResponseEntity.ok(driverService.getAvailableDrivers());
     }
 
-    // ─── GET /api/drivers/{id} ────────────────────────────────────
-    // Called by DriverProfile.jsx
+    
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getDriver(@PathVariable @NonNull Long id) {
         try {
@@ -53,8 +53,8 @@ public class DriverController {
         }
     }
 
-    // ─── PUT /api/drivers/{id} ────────────────────────────────────
-    // Called by DriverProfile.jsx when updating info
+    
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDriver(@PathVariable @NonNull Long id, @RequestBody Driver driver) {
         try {
@@ -64,8 +64,8 @@ public class DriverController {
         }
     }
 
-    // ─── PUT /api/drivers/{id}/availability ───────────────────────
-    // Called by Availability.jsx to toggle online/offline
+    
+    
     @PutMapping("/{id}/availability")
     public ResponseEntity<?> updateAvailability(
             @PathVariable @NonNull Long id,
@@ -79,8 +79,8 @@ public class DriverController {
         }
     }
 
-    // ─── DELETE /api/drivers/{id} ─────────────────────────────────
-    // Called by admin to remove a driver
+    
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteDriver(@PathVariable @NonNull Long id) {
         try {

@@ -9,9 +9,9 @@ import java.util.Optional;
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 
-    // Find admin by email
+    
     Optional<Admin> findByEmail(String email);
 
-    // Check if admin email already exists
+    
     boolean existsByEmail(String email);
 }

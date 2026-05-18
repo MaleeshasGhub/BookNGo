@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator, TouchableOpacity, Alert, Platform } from 'react-native';
 import api from '../../api/axios';
 
 export default function AdminUsersScreen() {
@@ -25,8 +25,53 @@ export default function AdminUsersScreen() {
     try {
       await api.put(`/admin/users/${id}/approve`);
       fetchUsers();
-    } catch (err) {
-      Alert.alert('Error', 'Failed to approve user');
+    } catch (err: any) {
+      Alert.alert('Error', err.response?.data?.error || err.message || 'Failed to approve user');
+    }
+  };
+
+  const handleDeactivate = async (id: number) => {
+    try {
+      await api.put(`/admin/users/${id}/deactivate`);
+      fetchUsers();
+    } catch (err: any) {
+      Alert.alert('Error', err.response?.data?.error || err.message || 'Failed to deactivate user');
+    }
+  };
+
+  const executeDelete = async (id: number, role: string) => {
+    try {
+      if (role === 'DRIVER') {
+        await api.delete(`/admin/drivers/${id}`);
+      } else {
+        await api.delete(`/admin/users/${id}`);
+      }
+      fetchUsers();
+    } catch (err: any) {
+      console.error("Delete Error:", err.response || err);
+      if (Platform.OS === 'web') {
+        window.alert(err.response?.data?.error || err.message || 'Failed to delete user');
+      } else {
+        Alert.alert('Error', err.response?.data?.error || err.message || 'Failed to delete user');
+      }
+    }
+  };
+
+  const handleDelete = (id: number, role: string) => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Are you sure you want to permanently delete this user?');
+      if (confirmed) {
+        executeDelete(id, role);
+      }
+    } else {
+      Alert.alert('Confirm', 'Are you sure you want to permanently delete this user?', [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: () => executeDelete(id, role)
+        }
+      ]);
     }
   };
 
@@ -57,11 +102,21 @@ export default function AdminUsersScreen() {
                 ]}>{u.userType}</Text>
               </View>
 
-              {u.status === 'INACTIVE' && (
-                <TouchableOpacity style={styles.approveButton} onPress={() => handleApprove(u.userId)}>
-                  <Text style={styles.approveButtonText}>Approve</Text>
+              <View style={styles.actionContainer}>
+                {u.status === 'INACTIVE' ? (
+                  <TouchableOpacity style={styles.approveButton} onPress={() => handleApprove(u.userId)}>
+                    <Text style={styles.approveButtonText}>Approve</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={styles.deactivateButton} onPress={() => handleDeactivate(u.userId)}>
+                    <Text style={styles.deactivateButtonText}>Deactivate</Text>
+                  </TouchableOpacity>
+                )}
+                
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(u.userId, u.userType)}>
+                  <Text style={styles.deleteButtonText}>Delete</Text>
                 </TouchableOpacity>
-              )}
+              </View>
             </View>
           ))
         )}
@@ -88,6 +143,11 @@ const styles = StyleSheet.create({
   roleTextAdmin: { color: '#ec4899' },
   roleTextDriver: { color: '#10b981' },
   roleTextPassenger: { color: '#6366f1' },
-  approveButton: { backgroundColor: '#10b981', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6, marginLeft: 12 },
-  approveButtonText: { color: '#ffffff', fontWeight: 'bold', fontSize: 12 },
+  actionContainer: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  approveButton: { backgroundColor: 'rgba(16, 185, 129, 0.2)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
+  approveButtonText: { color: '#10b981', fontWeight: 'bold', fontSize: 12 },
+  deactivateButton: { backgroundColor: 'rgba(239, 68, 68, 0.2)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
+  deactivateButtonText: { color: '#ef4444', fontWeight: 'bold', fontSize: 12 },
+  deleteButton: { backgroundColor: 'transparent', borderColor: 'rgba(239, 68, 68, 0.5)', borderWidth: 1, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
+  deleteButtonText: { color: '#ef4444', fontWeight: 'bold', fontSize: 12 },
 });

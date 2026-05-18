@@ -26,7 +26,7 @@ public class AdminController {
     @Autowired
     private RideService rideService;
 
-    // CREATE ADMIN
+    
     @PostMapping("/register")
     public ResponseEntity<?> createAdmin(@RequestBody Admin admin) {
         try {
@@ -36,19 +36,19 @@ public class AdminController {
         }
     }
 
-    // DASHBOARD
+    
     @GetMapping("/dashboard")
     public ResponseEntity<Map<String, Object>> getDashboard() {
         return ResponseEntity.ok(adminService.getDashboardStats());
     }
 
-    // GET ALL ADMINS
+    
     @GetMapping
     public ResponseEntity<List<Admin>> getAllAdmins() {
         return ResponseEntity.ok(adminService.getAllAdmins());
     }
 
-    // GET ADMIN BY ID
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getAdmin(@PathVariable @NonNull Long id) {
         try {
@@ -58,13 +58,13 @@ public class AdminController {
         }
     }
 
-    // USERS
+    
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // APPROVE USER
+    
     @PutMapping("/users/{id}/approve")
     public ResponseEntity<?> approveUser(@PathVariable @NonNull Long id) {
         try {
@@ -74,23 +74,66 @@ public class AdminController {
         }
     }
 
-    // DRIVERS
+    
+    @PutMapping("/users/{id}/deactivate")
+    public ResponseEntity<?> deactivateUser(@PathVariable @NonNull Long id) {
+        try {
+            return ResponseEntity.ok(adminService.deactivateUser(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable @NonNull Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    
     @GetMapping("/drivers")
     public ResponseEntity<?> getAllDrivers() {
         return ResponseEntity.ok(driverService.getAllDrivers());
     }
 
-    // RIDES
+    
+    @DeleteMapping("/drivers/{id}")
+    public ResponseEntity<?> deleteDriver(@PathVariable @NonNull Long id) {
+        try {
+            driverService.deleteDriver(id);
+            return ResponseEntity.ok(Map.of("message", "Driver deleted successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    
     @GetMapping("/rides")
     public ResponseEntity<?> getAllRides() {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
-    // UPDATE ADMIN
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAdmin(@PathVariable @NonNull Long id, @RequestBody Admin admin) {
         try {
             return ResponseEntity.ok(adminService.updateAdmin(id, admin));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAdmin(@PathVariable @NonNull Long id) {
+        try {
+            adminService.deleteAdmin(id);
+            return ResponseEntity.ok(Map.of("message", "Admin deleted successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

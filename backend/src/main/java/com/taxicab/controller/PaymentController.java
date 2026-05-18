@@ -17,8 +17,8 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    // ─── POST /api/payments ───────────────────────────────────────
-    // Called by Payment.jsx when passenger pays after ride
+    
+    
     @PostMapping
     public ResponseEntity<?> createPayment(@RequestBody Map<String, String> body) {
         try {
@@ -32,15 +32,15 @@ public class PaymentController {
         }
     }
 
-    // ─── GET /api/payments ────────────────────────────────────────
-    // Called by admin to view all payments
+    
+    
     @GetMapping
     public ResponseEntity<List<Payment>> getAllPayments() {
         return ResponseEntity.ok(paymentService.getAllPayments());
     }
 
-    // ─── GET /api/payments/{id} ───────────────────────────────────
-    // Called by Invoice.jsx to show receipt
+    
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getPayment(@PathVariable @NonNull Long id) {
         try {
@@ -50,8 +50,8 @@ public class PaymentController {
         }
     }
 
-    // ─── GET /api/payments/passenger/{passengerId} ────────────────
-    // Called by PaymentHistory.jsx
+    
+    
     @GetMapping("/passenger/{passengerId}")
     public ResponseEntity<?> getPaymentsByPassenger(@PathVariable @NonNull Long passengerId) {
         try {
@@ -61,8 +61,8 @@ public class PaymentController {
         }
     }
 
-    // ─── GET /api/payments/ride/{rideId} ──────────────────────────
-    // Called by Invoice.jsx to get payment for a specific ride
+    
+    
     @GetMapping("/ride/{rideId}")
     public ResponseEntity<?> getPaymentByRide(@PathVariable @NonNull Long rideId) {
         try {
@@ -72,8 +72,8 @@ public class PaymentController {
         }
     }
 
-    // ─── PUT /api/payments/{id}/status ───────────────────────────
-    // Called by admin to update payment status
+    
+    
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(
             @PathVariable @NonNull Long id,
@@ -87,8 +87,8 @@ public class PaymentController {
         }
     }
 
-    // ─── DELETE /api/payments/{id} ────────────────────────────────
-    // Called by admin to remove failed/invalid payments
+    
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePayment(@PathVariable @NonNull Long id) {
         try {

@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-// ─── Inheritance: PublicReview extends Review ─────────────────────────────────
-// ─── Polymorphism: overrides displayReview() for public visibility ─────────────
+
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -16,10 +15,10 @@ import lombok.NoArgsConstructor;
 @PrimaryKeyJoinColumn(name = "review_id")
 public class PublicReview extends Review {
 
-    // Public reviews are visible to all users
+    
     private boolean anonymous = false;
 
-    // ─── Polymorphism: public display includes passenger name ─────
+    
     @Override
     public String displayReview() {
         String author = anonymous ? "Anonymous" : getPassenger().getFullName();

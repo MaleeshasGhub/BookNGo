@@ -15,16 +15,16 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    // Get all payments by a passenger
+    
     List<Payment> findByPassenger(User passenger);
 
-    // Get payment for a specific ride
+    
     Optional<Payment> findByRide(Ride ride);
 
-    // Get payments by status
+    
     List<Payment> findByStatus(Payment.PaymentStatus status);
 
-    // Check if a ride already has a payment
+    
     boolean existsByRide(Ride ride);
 
 

@@ -43,12 +43,12 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // ─── Enums ───────────────────────────────────────────────────
+    
     public enum UserType { PASSENGER, DRIVER, ADMIN }
     public enum Status   { ACTIVE, INACTIVE }
 
-    // ─── Polymorphism: subclasses override this to provide
-    //     different authentication behaviour ────────────────────
+    
+    
     public String authenticate() {
         return "Authenticating user: " + email;
     }

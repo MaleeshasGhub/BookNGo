@@ -7,8 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
-// ─── Encapsulation: all payment data secured in this class ───────────────────
-// ─── Polymorphism: processPayment() behaves differently per payment method ────
+
 
 @Data
 @NoArgsConstructor
@@ -43,7 +42,7 @@ public class Payment {
     public enum PaymentMethod { CASH, CARD, WALLET }
     public enum PaymentStatus { PENDING, COMPLETED, FAILED }
 
-    // ─── Polymorphism: different processing message per method ────
+    
     public String processPayment() {
         return switch (method) {
             case CASH   -> "Processing cash payment of Rs. " + amount;

@@ -32,7 +32,7 @@ public class AdminService {
     @Autowired private RideRepository rideRepository;
     @Autowired private PaymentRepository paymentRepository;
 
-    // CREATE
+    
     public Admin createAdmin(Admin admin) {
         if (adminRepository.existsByEmail(admin.getEmail())) {
             throw new RuntimeException("Admin with this email already exists.");
@@ -41,7 +41,7 @@ public class AdminService {
         return adminRepository.save(admin);
     }
 
-    // READ
+    
     public Admin getAdminById(@NonNull Long id) {
         return adminRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Admin not found with id: " + id));
@@ -51,7 +51,7 @@ public class AdminService {
         return adminRepository.findAll();
     }
 
-    // DASHBOARD
+    
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
 
@@ -69,7 +69,7 @@ public class AdminService {
         return stats;
     }
 
-    // UPDATE
+    
     public Admin updateAdmin(@NonNull Long id, Admin updatedAdmin) {
         Admin existing = getAdminById(id);
         existing.setFullName(updatedAdmin.getFullName());
@@ -78,7 +78,7 @@ public class AdminService {
         return adminRepository.save(existing);
     }
 
-    // DELETE
+    
     public void deleteAdmin(@NonNull Long id) {
         if (!adminRepository.existsById(id)) {
             throw new RuntimeException("Admin not found with id: " + id);
@@ -86,7 +86,7 @@ public class AdminService {
         adminRepository.deleteById(id);
     }
 
-    // ADMIN ACTIONS
+    
     public User deactivateUser(@NonNull Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

@@ -11,6 +11,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 @Service
 public class RideService {
@@ -18,8 +21,10 @@ public class RideService {
     @Autowired private RideRepository   rideRepository;
     @Autowired private UserRepository   userRepository;
     @Autowired private DriverRepository driverRepository;
+    
+    @PersistenceContext private EntityManager entityManager;
 
-    // ─── CREATE: Book a new ride ──────────────────────────────────
+    
     public Ride bookRide(@NonNull Long passengerId, Ride ride) {
         User passenger = userRepository.findById(passengerId)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
@@ -27,44 +32,44 @@ public class RideService {
         ride.setPassenger(passenger);
         ride.setStatus(Ride.RideStatus.PENDING);
 
-        // Calculate fare based on ride type (Polymorphism in action)
-        double estimatedDistance = 10.0; // default 10km — can be dynamic later
+        
+        double estimatedDistance = 10.0; 
         ride.setFare(ride.calculateFare(estimatedDistance));
 
         return rideRepository.save(ride);
     }
 
-    // ─── READ: Get ride by ID ─────────────────────────────────────
+    
     public Ride getRideById(@NonNull Long id) {
         return rideRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ride not found with id: " + id));
     }
 
-    // ─── READ: Get all rides ──────────────────────────────────────
+    
     public List<Ride> getAllRides() {
         return rideRepository.findAll();
     }
 
-    // ─── READ: Get rides by passenger ────────────────────────────
+    
     public List<Ride> getRidesByPassenger(@NonNull Long passengerId) {
         User passenger = userRepository.findById(passengerId)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
         return rideRepository.findByPassenger(passenger);
     }
 
-    // ─── READ: Get rides by driver ────────────────────────────────
+    
     public List<Ride> getRidesByDriver(@NonNull Long driverId) {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
         return rideRepository.findByDriver(driver);
     }
 
-    // ─── READ: Get all pending rides ─────────────────────────────
+    
     public List<Ride> getPendingRides() {
         return rideRepository.findByStatus(Ride.RideStatus.PENDING);
     }
 
-    // ─── UPDATE: Update ride status ───────────────────────────────
+    
     public Ride updateRideStatus(@NonNull Long rideId, Ride.RideStatus newStatus, Long driverId) {
         Ride ride = getRideById(rideId);
 
@@ -73,7 +78,7 @@ public class RideService {
                     .orElseThrow(() -> new RuntimeException("Driver not found"));
             ride.setDriver(driver);
 
-            // Update driver availability based on ride status
+            
             if (newStatus == Ride.RideStatus.ACCEPTED || newStatus == Ride.RideStatus.ONGOING) {
                 driver.setAvailability(Driver.Availability.BUSY);
             } else if (newStatus == Ride.RideStatus.COMPLETED || newStatus == Ride.RideStatus.CANCELLED) {
@@ -86,7 +91,7 @@ public class RideService {
         return rideRepository.save(ride);
     }
 
-    // ─── DELETE: Cancel a ride ────────────────────────────────────
+    
     public Ride cancelRide(@NonNull Long rideId) {
         Ride ride = getRideById(rideId);
         if (ride.getStatus() != Ride.RideStatus.PENDING) {
@@ -94,5 +99,19 @@ public class RideService {
         }
         ride.setStatus(Ride.RideStatus.CANCELLED);
         return rideRepository.save(ride);
+    }
+
+    
+    @Transactional
+    public void deleteRide(@NonNull Long rideId) {
+        if (!rideRepository.existsById(rideId)) {
+            throw new RuntimeException("Ride not found with id: " + rideId);
+        }
+        
+        entityManager.createQuery("DELETE FROM Payment p WHERE p.ride.rideId = :id").setParameter("id", rideId).executeUpdate();
+        
+        entityManager.createQuery("DELETE FROM Review r WHERE r.ride.rideId = :id").setParameter("id", rideId).executeUpdate();
+        
+        rideRepository.deleteById(rideId);
     }
 }

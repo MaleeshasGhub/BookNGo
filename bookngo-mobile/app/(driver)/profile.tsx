@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Platform, Modal, TextInput } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
 import { router } from 'expo-router';
@@ -9,6 +9,9 @@ export default function DriverProfileScreen() {
   const [pastRides, setPastRides] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [formData, setFormData] = useState({ fullName: '', phone: '', vehicleType: '', vehiclePlate: '' });
 
   useEffect(() => {
     fetchData();
@@ -52,14 +55,68 @@ export default function DriverProfileScreen() {
     }
   };
 
+  const openEditModal = () => {
+    setFormData({
+      fullName: user?.fullName || '',
+      phone: user?.phone || '',
+      vehicleType: user?.vehicleType || '',
+      vehiclePlate: user?.vehiclePlate || ''
+    });
+    setEditModalVisible(true);
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      await api.put(`/drivers/${user?.userId}`, formData);
+      setEditModalVisible(false);
+      if (Platform.OS === 'web') window.alert('Profile updated! Please log in again to see changes.');
+      else Alert.alert('Success', 'Profile updated! Please log in again to see changes.');
+      // Optionally logout or refresh user context here
+    } catch (err: any) {
+      if (Platform.OS === 'web') window.alert(err.response?.data?.error || 'Failed to update profile');
+      else Alert.alert('Error', err.response?.data?.error || 'Failed to update profile');
+    }
+  };
+
+  const executeDeleteAccount = async () => {
+    try {
+      await api.delete(`/drivers/${user?.userId}`);
+      await logout();
+      if (Platform.OS === 'web') window.location.href = '/';
+      else router.replace('/');
+    } catch (err: any) {
+      if (Platform.OS === 'web') window.alert('Failed to delete account');
+      else Alert.alert('Error', 'Failed to delete account');
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Are you sure you want to PERMANENTLY delete your account? This action cannot be undone.');
+      if (confirmed) {
+        executeDeleteAccount();
+      }
+    } else {
+      Alert.alert('Delete Account', 'Are you sure you want to PERMANENTLY delete your account? This action cannot be undone.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete Forever', style: 'destructive', onPress: executeDeleteAccount }
+      ]);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>Driver Profile</Text>
-          <TouchableOpacity onPress={handleLogout}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <TouchableOpacity onPress={openEditModal}>
+              <Text style={styles.editText}>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleLogout}>
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.glassPanel}>
@@ -78,6 +135,7 @@ export default function DriverProfileScreen() {
               </View>
               <Text style={styles.profileSubtext}>{user?.email}</Text>
               <Text style={styles.profileSubtext}>{user?.phone}</Text>
+              <Text style={styles.profileSubtext}>{user?.vehicleType} - {user?.vehiclePlate}</Text>
             </View>
           </View>
         </View>
@@ -129,7 +187,62 @@ export default function DriverProfileScreen() {
             </View>
           ))
         )}
+        
+        <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
+          <Text style={styles.deleteAccountText}>Delete My Account</Text>
+        </TouchableOpacity>
       </ScrollView>
+
+      {/* Edit Profile Modal */}
+      <Modal visible={editModalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Profile</Text>
+            
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              placeholderTextColor="#6b7280"
+              value={formData.fullName}
+              onChangeText={(text) => setFormData({...formData, fullName: text})}
+            />
+            
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              placeholderTextColor="#6b7280"
+              keyboardType="phone-pad"
+              value={formData.phone}
+              onChangeText={(text) => setFormData({...formData, phone: text})}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Vehicle Type (e.g. Tuk Tuk)"
+              placeholderTextColor="#6b7280"
+              value={formData.vehicleType}
+              onChangeText={(text) => setFormData({...formData, vehicleType: text})}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Vehicle Plate"
+              placeholderTextColor="#6b7280"
+              value={formData.vehiclePlate}
+              onChangeText={(text) => setFormData({...formData, vehiclePlate: text})}
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.cancelButton} onPress={() => setEditModalVisible(false)}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.saveButton} onPress={handleUpdateProfile}>
+                <Text style={styles.saveButtonText}>Save Changes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -139,6 +252,7 @@ const styles = StyleSheet.create({
   content: { padding: 24 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, marginTop: 20 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#ffffff' },
+  editText: { color: '#6366f1', fontSize: 16, fontWeight: '600' },
   logoutText: { color: '#ef4444', fontSize: 16, fontWeight: '600' },
   glassPanel: { backgroundColor: 'rgba(26, 29, 45, 0.7)', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', marginBottom: 24 },
   profileInfoContainer: { flexDirection: 'row', alignItems: 'center' },
@@ -169,4 +283,17 @@ const styles = StyleSheet.create({
   reviewStars: { color: '#fbbf24', letterSpacing: 2 },
   reviewComment: { color: '#d1d5db', fontStyle: 'italic', marginBottom: 8 },
   verifiedText: { color: '#10b981', fontSize: 10, fontWeight: 'bold' },
+  deleteAccountButton: { marginTop: 32, marginBottom: 40, paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(239,68,68,0.2)', alignItems: 'center' },
+  deleteAccountText: { color: '#ef4444', fontWeight: 'bold', fontSize: 16 },
+
+  // Modal Styles
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: 20 },
+  modalContent: { backgroundColor: '#1a1d2d', borderRadius: 16, padding: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#ffffff', marginBottom: 20 },
+  input: { backgroundColor: 'rgba(0,0,0,0.2)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', color: '#ffffff', padding: 12, borderRadius: 8, marginBottom: 16 },
+  modalActions: { flexDirection: 'row', gap: 12, marginTop: 8 },
+  cancelButton: { flex: 1, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)', alignItems: 'center' },
+  cancelButtonText: { color: '#ffffff', fontWeight: 'bold' },
+  saveButton: { flex: 1, padding: 12, borderRadius: 8, backgroundColor: '#6366f1', alignItems: 'center' },
+  saveButtonText: { color: '#ffffff', fontWeight: 'bold' },
 });

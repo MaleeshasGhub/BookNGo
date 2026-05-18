@@ -20,7 +20,7 @@ public class PaymentService {
     @Autowired private RideRepository    rideRepository;
     @Autowired private UserRepository    userRepository;
 
-    // ─── CREATE: Record a new payment ────────────────────────────
+    
     public Payment createPayment(@NonNull Long rideId, @NonNull Long passengerId, Payment.PaymentMethod method) {
 
         Ride ride = rideRepository.findById(rideId)
@@ -45,26 +45,26 @@ public class PaymentService {
         payment.setStatus(Payment.PaymentStatus.COMPLETED);
         payment.setPaidAt(LocalDateTime.now());
 
-        // Polymorphism: calls the right processPayment() message
+        
         System.out.println(payment.processPayment());
 
         return paymentRepository.save(payment);
     }
 
-    // ─── READ: Get payment by ID ──────────────────────────────────
+    
     public Payment getPaymentById(@NonNull Long id) {
         return paymentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Payment not found with id: " + id));
     }
 
-    // ─── READ: Get all payments by passenger ─────────────────────
+    
     public List<Payment> getPaymentsByPassenger(@NonNull Long passengerId) {
         User passenger = userRepository.findById(passengerId)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
         return paymentRepository.findByPassenger(passenger);
     }
 
-    // ─── READ: Get payment by ride ────────────────────────────────
+    
     public Payment getPaymentByRide(@NonNull Long rideId) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
@@ -72,24 +72,21 @@ public class PaymentService {
                 .orElseThrow(() -> new RuntimeException("No payment found for this ride"));
     }
 
-    // ─── READ: Get all payments (admin) ──────────────────────────
+    
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
     }
 
-    // ─── UPDATE: Update payment status ───────────────────────────
+    
     public Payment updatePaymentStatus(@NonNull Long id, Payment.PaymentStatus status) {
         Payment payment = getPaymentById(id);
         payment.setStatus(status);
         return paymentRepository.save(payment);
     }
 
-    // ─── DELETE: Remove failed/invalid payment ────────────────────
+    
     public void deletePayment(@NonNull Long id) {
         Payment payment = getPaymentById(id);
-        if (payment.getStatus() == Payment.PaymentStatus.COMPLETED) {
-            throw new RuntimeException("Cannot delete a completed payment.");
-        }
         paymentRepository.deleteById(id);
     }
 }

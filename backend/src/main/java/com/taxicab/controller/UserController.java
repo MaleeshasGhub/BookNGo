@@ -17,8 +17,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // ─── POST /api/users/register ─────────────────────────────────
-    // Called by Register.jsx when user submits the form
+    
+    
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         try {
@@ -29,8 +29,8 @@ public class UserController {
         }
     }
 
-    // ─── POST /api/users/login ────────────────────────────────────
-    // Called by Login.jsx
+    
+    
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         try {
@@ -41,8 +41,8 @@ public class UserController {
         }
     }
 
-    // ─── GET /api/users/{id} ──────────────────────────────────────
-    // Called by Profile.jsx to load user data
+    
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable @NonNull Long id) {
         try {
@@ -52,15 +52,15 @@ public class UserController {
         }
     }
 
-    // ─── GET /api/users ───────────────────────────────────────────
-    // Called by admin ManageUsers.jsx
+    
+    
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // ─── PUT /api/users/{id} ──────────────────────────────────────
-    // Called by Profile.jsx when user updates their info
+    
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable @NonNull Long id, @RequestBody User user) {
         try {
@@ -70,8 +70,8 @@ public class UserController {
         }
     }
 
-    // ─── DELETE /api/users/{id} ───────────────────────────────────
-    // Called by admin or user to delete account
+    
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable @NonNull Long id) {
         try {

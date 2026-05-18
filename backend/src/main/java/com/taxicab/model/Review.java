@@ -7,9 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
-// ─── Encapsulation: all review data secured in this class ────────────────────
-// ─── Inheritance:  PublicReview and VerifiedReview extend this class ──────────
-// ─── Polymorphism: displayReview() differs between review types ───────────────
+
 
     @Data
     @NoArgsConstructor
@@ -36,7 +34,7 @@ import java.time.LocalDateTime;
         private Driver driver;
 
         @Column(nullable = false)
-        private int rating; // 1 to 5
+        private int rating; 
 
         private String comment;
 
@@ -47,7 +45,7 @@ import java.time.LocalDateTime;
 
         public enum ReviewStatus { VISIBLE, HIDDEN }
 
-        // ─── Polymorphism: subclasses override display behaviour ──────
+        
         public String displayReview() {
             return "Review by passenger " + passenger.getFullName()
                     + " | Rating: " + rating + "/5 | " + comment;

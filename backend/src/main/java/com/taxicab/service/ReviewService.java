@@ -16,7 +16,7 @@ public class ReviewService {
     @Autowired private UserRepository    userRepository;
     @Autowired private DriverRepository  driverRepository;
 
-    // CREATE REVIEW
+    
     public Review submitReview(@NonNull Long rideId, @NonNull Long passengerId, int rating, String comment) {
 
         Ride ride = rideRepository.findById(rideId)
@@ -49,13 +49,13 @@ public class ReviewService {
         review.setStatus(Review.ReviewStatus.VISIBLE);
         review.setVerifiedRide(true);
 
-        // Polymorphism example
+        
         System.out.println(review.displayReview());
 
         return reviewRepository.save(review);
     }
 
-    // GET DRIVER REVIEWS
+    
     public List<Review> getReviewsByDriver(@NonNull Long driverId) {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
@@ -63,7 +63,7 @@ public class ReviewService {
         return reviewRepository.findByDriverAndStatus(driver, Review.ReviewStatus.VISIBLE);
     }
 
-    // GET PASSENGER REVIEWS
+    
     public List<Review> getReviewsByPassenger(@NonNull Long passengerId) {
         User passenger = userRepository.findById(passengerId)
                 .orElseThrow(() -> new RuntimeException("Passenger not found"));
@@ -71,18 +71,18 @@ public class ReviewService {
         return reviewRepository.findByPassenger(passenger);
     }
 
-    // GET ALL REVIEWS
+    
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
 
-    // GET REVIEW BY ID
+    
     public Review getReviewById(@NonNull Long id) {
         return reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
     }
 
-    // UPDATE REVIEW
+    
     public Review updateReview(@NonNull Long id, int rating, String comment) {
         Review review = getReviewById(id);
 
@@ -96,21 +96,21 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
-    // HIDE REVIEW
+    
     public Review hideReview(@NonNull Long id) {
         Review review = getReviewById(id);
         review.setStatus(Review.ReviewStatus.HIDDEN);
         return reviewRepository.save(review);
     }
 
-    // SHOW REVIEW
+    
     public Review showReview(@NonNull Long id) {
         Review review = getReviewById(id);
         review.setStatus(Review.ReviewStatus.VISIBLE);
         return reviewRepository.save(review);
     }
 
-    // DELETE REVIEW
+    
     public void deleteReview(@NonNull Long id) {
         if (!reviewRepository.existsById(id)) {
             throw new RuntimeException("Review not found with id: " + id);
